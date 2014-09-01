@@ -406,51 +406,80 @@
 						var finalUrl = jsonRes.url;
 						var upToken = jsonRes.token;
 						console.log("bucket:" + bucket + ", url:" + finalUrl + ", token:" + upToken);
+						var fVideo = fVideoObj.files[0]; 
 						var videoBucket = new qiniu.bucket(bucket, {putToken: upToken});
-						videoBucket.putFile(currentTS, fVideoObj.files[0])
+						videoBucket.putFile(currentTS, fVideo)
 						.then(function(reply){
-						    console.log("upload successed");	
+						    console.log("upload successed");
+							var metaData = {};
+							metaData["size"] = 31312312;
+							var avFileVideo = new AV.File.withURL(currentTS, finalUrl, metaData);
+							avFileVideo.save().then(function() {
+								$("#upimage").html("Uploading(vdata)....");
+								var vclass = AV.Object.extend("video");
+								var videoObj = new vclass();
+								videoObj.set("user_id", uobj);
+								videoObj.set("channel_id", cobj);
+								videoObj.set("image", avFileImage);
+								videoObj.set("video", avFileVideo);
+								videoObj.set("title", $('#title').val());
+								videoObj.set("content", $('#content').val());
+								videoObj.save(null, {
+									success: function (video) {
+										clearInterval();
+										location.href = "video_list.html";
+									},
+									error: function (video, error) {
+										clearInterval();
+										alert('Failed to create new object, with error code: ' + error.description);
+									}
+								});
+							}, function(err) {
+								clearInterval();
+								alert('Failed to create new object, with error code: ' + error.description);
+							});
 						},function(err){
+							clearInterval();
 							console.log("upload failed. error:" + err);
 						});
 					}
-					console.log(xmlhttp.response);
 				};
 				xmlhttp.addEventListener("error", function(e){
+					clearInterval();
 					console.log("Error: " + e);
 				}, false);
 								
 				//upload video
-				var fVideo = fVideoObj.files[0]; 
-				var avFileVideo = new AV.File("video.mp4", fVideo);
-		  
-				$("#upimage").html("Uploading(video)");
-				avFileVideo.save().then(function () {
-					$("#upimage").html("Uploading(vdata)....");
-					var vclass = AV.Object.extend("video");
-					var videoObj = new vclass();
-			
-					videoObj.set("user_id", uobj);
-					videoObj.set("channel_id", cobj);
-					videoObj.set("image", avFileImage);
-					videoObj.set("video", avFileVideo);
-					videoObj.set("title", $('#title').val());
-                	videoObj.set("content", $('#content').val());
-					
-					videoObj.save(null, {
-						success: function (video) {
-							clearInterval();
-							location.href = "video_list.html";
-						},
-						error: function (video, error) {
-							clearInterval();
-							alert('Failed to create new object, with error code: ' + error.description);
-						}
-					});
-				},function(error) {
-					clearInterval();
-					alert('Failed to create new object, with error code: ' + error.description);
-				});							
+				// var fVideo = fVideoObj.files[0];
+				// var avFileVideo = new AV.File("video.mp4", fVideo);
+				//
+				// $("#upimage").html("Uploading(video)");
+				// avFileVideo.save().then(function () {
+				// 	$("#upimage").html("Uploading(vdata)....");
+				// 	var vclass = AV.Object.extend("video");
+				// 	var videoObj = new vclass();
+				//
+				// 	videoObj.set("user_id", uobj);
+				// 	videoObj.set("channel_id", cobj);
+				// 	videoObj.set("image", avFileImage);
+				// 	videoObj.set("video", avFileVideo);
+				// 	videoObj.set("title", $('#title').val());
+				//                 	videoObj.set("content", $('#content').val());
+				//
+				// 	videoObj.save(null, {
+				// 		success: function (video) {
+				// 			clearInterval();
+				// 			location.href = "video_list.html";
+				// 		},
+				// 		error: function (video, error) {
+				// 			clearInterval();
+				// 			alert('Failed to create new object, with error code: ' + error.description);
+				// 		}
+				// 	});
+				// },function(error) {
+				// 	clearInterval();
+				// 	alert('Failed to create new object, with error code: ' + error.description);
+				// });
 			},function(error) {
 				clearInterval();
 				alert('Failed to create new object, with error code: ' + error.description);
