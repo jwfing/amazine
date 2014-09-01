@@ -375,7 +375,7 @@
 			$("#upimage").attr("hidden",false);
 			self.setInterval("clock()", 500);
 			
-			var currentTS = (new Date()).valueOf();
+			var currentTS = (new Date()).valueOf().toString() + "000";
 	        var xmlhttp = {};
 	        if (window.XMLHttpRequest) {
 	            xmlhttp = new XMLHttpRequest();
@@ -385,7 +385,12 @@
 			xmlhttp.open("POST", "https://cn.avoscloud.com/1/qiniu");
 			xmlhttp.setRequestHeader("X-AVOSCloud-Application-Id", "y8cwz5xanjtclwys0cm6ucb07vrccr8oedicxznhcr9zwbwd");
 			xmlhttp.setRequestHeader("X-AVOSCloud-Application-Key", "bkzhoupdt3mjaze7y9kphdmguyxfjbp5nib9rmjtneyuwrk5");
-			var xhrParams = "key=" + currentTS + "&name=" + currentTS + "&__type=File";
+//			var xhrParams = "key=" + currentTS + "&name=" + currentTS + "&__type=File";
+			var xhrParams = new FormData();
+			xhrParams.append("key", currentTS);
+			xhrParams.append("name", currentTS);
+			xhrParams.append("mime_type", "video/mp4");
+			xhrParams.append("__type", "File");
 			xmlhttp.send(xhrParams);
 			xmlhttp.onreadystatechange = function() {
 				if (xmlhttp.readyState == xmlhttp.DONE) {
