@@ -287,6 +287,7 @@
     <script src="assets/scripts/app.js"></script>
     <script src="assets/scripts/form-validation/video.js"></script>
     <script src="https://cn.avoscloud.com/scripts/lib/av-0.4.1.min.js"></script>
+	<script type="text/javascript" src="assets/plugins/qiniu/qiniu.js"></script>
     <script>
         jQuery(document).ready(function () {
             App.init();
@@ -374,6 +375,27 @@
 			$("#upimage").attr("hidden",false);
 			self.setInterval("clock()", 500);
 			
+			var currentTS = (new Date()).valueOf();
+	        var xmlhttp = {};
+	        if (window.XMLHttpRequest) {
+	            xmlhttp = new XMLHttpRequest();
+	        } else {
+	            xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
+	        }
+			xmlhttp.setRequestHeader("X-AVOSCloud-Application-Id", "y8cwz5xanjtclwys0cm6ucb07vrccr8oedicxznhcr9zwbwd");
+			xmlhttp.setRequestHeader("X-AVOSCloud-Application-Key", "bkzhoupdt3mjaze7y9kphdmguyxfjbp5nib9rmjtneyuwrk5");
+			xmlhttp.open("POST", "https://cn.avoscloud.com/1/qiniu");
+			var xhrParams = "key=" + currentTS + "&name=" + currentTS + "&__type=File";
+			xmlhttp.send(xhrParams);
+			xmlhttp.onreadystatechange = function() {
+				if (xmlhttp.readyState == xmlhttp.DONE) {
+					console(xmlhttp.response);
+				}
+			};
+			xmlhttp.addEventListener("error", function(e){
+				console("Error: " + e);
+			}, false);
+
 			//upload image
 			var fImage = fImageObj.files[0];
 
