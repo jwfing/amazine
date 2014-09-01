@@ -375,37 +375,51 @@
 			$("#upimage").attr("hidden",false);
 			self.setInterval("clock()", 500);
 			
-			var currentTS = (new Date()).valueOf().toString() + "000";
-	        var xmlhttp = {};
-	        if (window.XMLHttpRequest) {
-	            xmlhttp = new XMLHttpRequest();
-	        } else {
-	            xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
-	        }
-			xmlhttp.open("POST", "https://cn.avoscloud.com/1/qiniu");
-			xmlhttp.setRequestHeader("X-AVOSCloud-Application-Id", "y8cwz5xanjtclwys0cm6ucb07vrccr8oedicxznhcr9zwbwd");
-			xmlhttp.setRequestHeader("X-AVOSCloud-Application-Key", "bkzhoupdt3mjaze7y9kphdmguyxfjbp5nib9rmjtneyuwrk5");
-//			var xhrParams = "key=" + currentTS + "&name=" + currentTS + "&__type=File";
-			var xhrParams = new FormData();
-			xhrParams.append("key", currentTS);
-			xhrParams.append("name", currentTS);
-			xhrParams.append("mime_type", "video/mp4");
-			xhrParams.append("__type", "File");
-			xmlhttp.send(xhrParams);
-			xmlhttp.onreadystatechange = function() {
-				if (xmlhttp.readyState == xmlhttp.DONE) {
-					console(xmlhttp.response);
-				}
-			};
-			xmlhttp.addEventListener("error", function(e){
-				console("Error: " + e);
-			}, false);
 
 			//upload image
 			var fImage = fImageObj.files[0];
 
 			var avFileImage = new AV.File("image.png", fImage);              
-			avFileImage.save().then(function () {					
+			avFileImage.save().then(function () {	
+				// get upload token
+				var currentTS = (new Date()).valueOf().toString() + "000";
+		        var xmlhttp = {};
+		        if (window.XMLHttpRequest) {
+		            xmlhttp = new XMLHttpRequest();
+		        } else {
+		            xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
+		        }
+				xmlhttp.open("POST", "https://cn.avoscloud.com/1/qiniu");
+				xmlhttp.setRequestHeader("X-AVOSCloud-Application-Id", "y8cwz5xanjtclwys0cm6ucb07vrccr8oedicxznhcr9zwbwd");
+				xmlhttp.setRequestHeader("X-AVOSCloud-Application-Key", "bkzhoupdt3mjaze7y9kphdmguyxfjbp5nib9rmjtneyuwrk5");
+				xmlhttp.setRequestHeader("Accept", "application/json");
+				xmlhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+				var xhrParams = {};
+				xhrParams["key"] = currentTS;
+				xhrParams["name"]=currentTS;
+				xhrParams["__type"]="File";
+				xmlhttp.send(JSON.stringify(xhrParams));
+				xmlhttp.onreadystatechange = function() {
+					if (xmlhttp.readyState == xmlhttp.DONE) {
+						var jsonRes = JSON.parse(xmlhttp.responseText);
+						var bucket = jsonRes.bucket;
+						var finalUrl = jsonRes.url;
+						var upToken = jsonRes.token;
+						console.log("bucket:" + bucket + ", url:" + finalUrl + ", token:" + upToken);
+						var videoBucket = new qiniu.bucket(bucket, {putToken: upToken});
+						videoBucket.putFile(currentTS, fVideoObj.files[0])
+						.then(function(reply){
+						    console.log("upload successed");	
+						},function(err){
+							console.log("upload failed. error:" + err);
+						});
+					}
+					console.log(xmlhttp.response);
+				};
+				xmlhttp.addEventListener("error", function(e){
+					console.log("Error: " + e);
+				}, false);
+								
 				//upload video
 				var fVideo = fVideoObj.files[0]; 
 				var avFileVideo = new AV.File("video.mp4", fVideo);
