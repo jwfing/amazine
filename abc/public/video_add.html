@@ -296,20 +296,6 @@
 
            AV.initialize("y8cwz5xanjtclwys0cm6ucb07vrccr8oedicxznhcr9zwbwd", "bkzhoupdt3mjaze7y9kphdmguyxfjbp5nib9rmjtneyuwrk5");
             
-			/*var GameScore = AV.Object.extend("dt_main");
-            var query = new AV.Query(GameScore);
-            query.get("53e89b01e4b056c0f68b839d", {
-                success: function (gameScore) {
-                    // The object was retrieved successfully.
-                    $("#img").attr("src", gameScore.get("image"));
-                    $("#titlename").text(gameScore.get("name"));
-                },
-                error: function (object, error) {
-                    // The object was not retrieved successfully.
-                    // error is a AV.Error with an error code and description.
-                }
-            });*/
-			
 			var uclass = AV.Object.extend("_User");
 			var uquery = new AV.Query(uclass);
 			uquery.find({
@@ -380,7 +366,8 @@
 			var fImage = fImageObj.files[0];
 
 			var avFileImage = new AV.File("image.png", fImage);              
-			avFileImage.save().then(function () {	
+			avFileImage.save().then(function () {
+				$("#upimage").html("Uploading(video)....");
 				// get upload token
 				var currentTS = (new Date()).valueOf().toString() + "000";
 		        var xmlhttp = {};
@@ -410,12 +397,11 @@
 						var videoBucket = new qiniu.bucket(bucket, {putToken: upToken});
 						videoBucket.putFile(currentTS, fVideo)
 						.then(function(reply){
-						    console.log("upload successed");
+							$("#upimage").html("Generate(videodata)....");
 							var metaData = {};
-							metaData["size"] = 31312312;
+							metaData["size"] = 31312312; // TODO: please replace with the really file size
 							var avFileVideo = new AV.File.withURL(currentTS, finalUrl, metaData);
 							avFileVideo.save().then(function() {
-								$("#upimage").html("Uploading(vdata)....");
 								var vclass = AV.Object.extend("video");
 								var videoObj = new vclass();
 								videoObj.set("user_id", uobj);
@@ -426,6 +412,7 @@
 								videoObj.set("content", $('#content').val());
 								videoObj.save(null, {
 									success: function (video) {
+										$("#upimage").html("upload successed!");
 										clearInterval();
 										location.href = "video_list.html";
 									},
