@@ -382,9 +382,9 @@
 	        } else {
 	            xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
 	        }
+			xmlhttp.open("POST", "https://cn.avoscloud.com/1/qiniu");
 			xmlhttp.setRequestHeader("X-AVOSCloud-Application-Id", "y8cwz5xanjtclwys0cm6ucb07vrccr8oedicxznhcr9zwbwd");
 			xmlhttp.setRequestHeader("X-AVOSCloud-Application-Key", "bkzhoupdt3mjaze7y9kphdmguyxfjbp5nib9rmjtneyuwrk5");
-			xmlhttp.open("POST", "https://cn.avoscloud.com/1/qiniu");
 			var xhrParams = "key=" + currentTS + "&name=" + currentTS + "&__type=File";
 			xmlhttp.send(xhrParams);
 			xmlhttp.onreadystatechange = function() {
