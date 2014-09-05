@@ -361,7 +361,6 @@
 			$("#upimage").attr("hidden",false);
 			self.setInterval("clock()", 500);
 			
-
 			//upload image
 			var fImage = fImageObj.files[0];
 
@@ -399,7 +398,7 @@
 						.then(function(reply){
 							$("#upimage").html("Generate(videodata)....");
 							var metaData = {};
-							metaData["size"] = 31312312; // TODO: please replace with the really file size
+							metaData["size"] = fVideoObj.files.length; // TODO: please replace with the really file size
 							var avFileVideo = new AV.File.withURL(currentTS, finalUrl, metaData);
 							avFileVideo.save().then(function() {
 								var vclass = AV.Object.extend("video");
